@@ -7,7 +7,8 @@ This Python GUI app helps visualize a **parametric line in 3D space** — perfec
 This tool demonstrates how a line in space can be described using a point and a direction vector:
 
 - 📌 Given Point: \( P = (x_0, y_0, z_0) \)
-- ➡️ Direction Vector: \( ec{u} = \langle a, b, c angle \)
+- ➡️ Direction Vector: \( ec{u} = \langle a, b, c
+  angle \)
 - 📈 Parametric Equations:
   ```
   x(t) = x₀ + at  
@@ -53,14 +54,25 @@ python parametric_line_gui_final.py
 ## 🧮 Example
 
 Using default values:
+
 - Point: \( P = (2, 8, 5) \)
-- Vector: \( ec{u} = \langle -3, 4, -1 angle \)
+- Vector: \( ec{u} = \langle -3, 4, -1
+  angle \)
 - \( t = 1 \)
 
 Generates:
+
 - Another point: \( (-1, 12, 4) \)
 - Line passes through both points and follows the vector direction
 
 ---
 
 Created with ❤️ for students exploring vectors and parametric equations in Calculus 3.
+
+**Crafted by Anatolie Jentimir — blending code, creativity, and calculus for curious minds.**
+---
+
+## ⚖️ License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).  
+You are free to use, modify, and distribute this software without restriction.

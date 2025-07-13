@@ -109,3 +109,5 @@ output_text.grid(row=5, column=0, columnspan=4, padx=10, pady=5)
 tk.Label(root, text="🧮 Calculus 3 Visualizer | Powered by Python & Matplotlib", fg="gray").grid(row=6, column=0, columnspan=4, pady=10)
 
 root.mainloop()
+
+
