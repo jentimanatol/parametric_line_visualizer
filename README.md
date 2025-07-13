@@ -2,9 +2,9 @@
 
 This Python GUI app helps visualize a **parametric line in 3D space** — perfect for Calculus III students learning vector equations.
 
-## 🚀 Download
+**[Download Latest Release](https://github.com/jentimanatol/parametric_line_visualizer/releases/latest)**
 
-Get the latest release from the [GitHub Releases page](https://github.com/yourusername/parametric_line_visualizer/releases).
+Get the newest version from the [GitHub Releases page](https://github.com/jentimanatol/parametric_line_visualizer/releases).
 
 | Release | Platform      | License      |
 |---------|--------------|--------------|
