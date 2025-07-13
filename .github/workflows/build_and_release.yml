@@ -22,42 +22,40 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pyinstaller matplotlib numpy
-          # Ensure matplotlib includes 3D and GUI backends
-          pip install "matplotlib[qt,tk]"
 
       - name: 📥 Download UPX binary
         run: |
           Invoke-WebRequest https://github.com/upx/upx/releases/download/v4.2.1/upx-4.2.1-win64.zip -OutFile upx.zip
           Expand-Archive upx.zip -DestinationPath .
-          echo "✅ UPX extracted."
 
-      - name: ✅ Verify icon file exists
+      - name: ✅ Check if icon exists
         run: |
           if (Test-Path "assets\app_icon_256×256.ico") {
-            echo "✔ Icon file found: assets\app_icon_256×256.ico"
+            echo "✔ Icon file found."
           } else {
-            echo "❌ Icon file not found!"
+            echo "❌ Icon file missing!"
             exit 1
           }
 
-      - name: 🛠️ Build EXE with PyInstaller and UPX
+      - name: 🛠️ Build EXE with PyInstaller (with icon and matplotlib support)
         run: |
-          pyinstaller --noconfirm --onefile --windowed `
+          $mplData = python -c "import matplotlib; print(matplotlib.get_data_path())"
+          pyinstaller parametric_line_visualizer.py `
+            --onefile `
+            --noconfirm `
+            --windowed `
             --icon=assets/app_icon_256×256.ico `
             --name parametric_line_visualizer `
-            --add-data "assets;assets" `
-            --add-data "assets/app_icon_32×32.ico;assets" `
+            --add-data="$mplData;matplotlib/mpl-data" `
             --hidden-import=matplotlib.backends.backend_tkagg `
-            --add-data "%LOCALAPPDATA%\Programs\Python\Python311\Lib\site-packages\matplotlib\mpl-data;matplotlib\mpl-data" `
-            parametric_line_visualizer.py `
             --upx-dir upx-4.2.1-win64
 
       - name: 🧪 Check EXE output
         run: |
           if (Test-Path "dist\parametric_line_visualizer.exe") {
-            echo "✅ Executable created successfully"
+            echo "✅ EXE created."
           } else {
-            echo "❌ Executable build failed"
+            echo "❌ Build failed."
             exit 1
           }
 
@@ -69,7 +67,7 @@ jobs:
         run: |
           Compress-Archive -Path "dist\parametric_line_visualizer_${{ github.ref_name }}.exe" -DestinationPath "parametric_line_visualizer_${{ github.ref_name }}.zip"
 
-      - name: 📤 Upload EXE Artifact
+      - name: 📤 Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: parametric_line_visualizer
@@ -82,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Download EXE Artifact
+      - name: 📥 Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: parametric_line_visualizer
