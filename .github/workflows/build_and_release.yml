@@ -59,20 +59,17 @@ jobs:
             exit 1
           }
 
-      - name: 🪪 Rename EXE with version
+      - name: 📦 Copy and Zip EXE
         run: |
-          Copy-Item "dist\parametric_line_visualizer.exe" "dist\parametric_line_visualizer_${{ github.ref_name }}.exe"
-
-      - name: 📦 ZIP EXE
-        run: |
-          Compress-Archive -Path "dist\parametric_line_visualizer_${{ github.ref_name }}.exe" -DestinationPath "parametric_line_visualizer_${{ github.ref_name }}.zip"
+          Copy-Item "dist\parametric_line_visualizer.exe" -Destination "parametric_line_visualizer_${{ github.ref_name }}.exe"
+          Compress-Archive -Path "parametric_line_visualizer_${{ github.ref_name }}.exe" -DestinationPath "parametric_line_visualizer_${{ github.ref_name }}.zip"
 
       - name: 📤 Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: parametric_line_visualizer
+          name: release_files
           path: |
-            dist/parametric_line_visualizer_${{ github.ref_name }}.exe
+            parametric_line_visualizer_${{ github.ref_name }}.exe
             parametric_line_visualizer_${{ github.ref_name }}.zip
 
   release:
@@ -83,10 +80,10 @@ jobs:
       - name: 📥 Download Artifact
         uses: actions/download-artifact@v4
         with:
-          name: parametric_line_visualizer
-          path: .  # Flatten into current working directory
+          name: release_files
+          path: .
 
-      - name: 🧾 List files for debugging
+      - name: 🧾 List downloaded files
         run: ls -la
 
       - name: 🚀 Publish GitHub Release
