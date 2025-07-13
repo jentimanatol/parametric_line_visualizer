@@ -10,6 +10,12 @@ Get the newest version from the [GitHub Releases page](https://github.com/jentim
 |---------|--------------|--------------|
 | Latest  | Windows, Mac | MIT License  |
 
+
+
+## 🖼️ Screenshots
+
+![Main GUI](assets/screenshots/Screenshot%202025-07-13%20154135.png)
+
 ## 🎓 Purpose
 
 This tool demonstrates how a line in space can be described using a point and a direction vector:
