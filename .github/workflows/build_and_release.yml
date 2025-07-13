@@ -1,54 +1,97 @@
-name: Build and Release Parametric Line Visualizer
+name: Build and Release EXE
 
 on:
   push:
     tags:
-      - 'v*'  # Only build when a version tag is pushed
+      - 'v*.*'
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: 📦 Checkout source
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: 📚 Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install matplotlib numpy pyinstaller
+          pip install pyinstaller matplotlib numpy
+          # Ensure matplotlib includes 3D and GUI backends
+          pip install "matplotlib[qt,tk]"
 
-      - name: Build executable with PyInstaller
+      - name: 📥 Download UPX binary
         run: |
-          pyinstaller parametric_line_visualizer.py ^
-            --onefile ^
-            --noconfirm ^
-            --windowed ^
-            --hidden-import=matplotlib.backends.backend_tkagg ^
-            --add-data "C:\hostedtoolcache\windows\Python\3.11.*/x64\Lib\site-packages\matplotlib\mpl-data;matplotlib\mpl-data"
+          Invoke-WebRequest https://github.com/upx/upx/releases/download/v4.2.1/upx-4.2.1-win64.zip -OutFile upx.zip
+          Expand-Archive upx.zip -DestinationPath .
+          echo "✅ UPX extracted."
 
-      - name: Upload release artifact
-        uses: actions/upload-artifact@v3
+      - name: ✅ Verify icon file exists
+        run: |
+          if (Test-Path "assets\app_icon_256×256.ico") {
+            echo "✔ Icon file found: assets\app_icon_256×256.ico"
+          } else {
+            echo "❌ Icon file not found!"
+            exit 1
+          }
+
+      - name: 🛠️ Build EXE with PyInstaller and UPX
+        run: |
+          pyinstaller --noconfirm --onefile --windowed `
+            --icon=assets/app_icon_256×256.ico `
+            --name parametric_line_visualizer `
+            --add-data "assets;assets" `
+            --add-data "assets/app_icon_32×32.ico;assets" `
+            --hidden-import=matplotlib.backends.backend_tkagg `
+            --add-data "%LOCALAPPDATA%\Programs\Python\Python311\Lib\site-packages\matplotlib\mpl-data;matplotlib\mpl-data" `
+            parametric_line_visualizer.py `
+            --upx-dir upx-4.2.1-win64
+
+      - name: 🧪 Check EXE output
+        run: |
+          if (Test-Path "dist\parametric_line_visualizer.exe") {
+            echo "✅ Executable created successfully"
+          } else {
+            echo "❌ Executable build failed"
+            exit 1
+          }
+
+      - name: 🪪 Rename EXE with version
+        run: |
+          Copy-Item "dist\parametric_line_visualizer.exe" "dist\parametric_line_visualizer_${{ github.ref_name }}.exe"
+
+      - name: 📦 ZIP EXE
+        run: |
+          Compress-Archive -Path "dist\parametric_line_visualizer_${{ github.ref_name }}.exe" -DestinationPath "parametric_line_visualizer_${{ github.ref_name }}.zip"
+
+      - name: 📤 Upload EXE Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: parametric_line_visualizer
-          path: dist/parametric_line_visualizer.exe
+          path: |
+            dist/parametric_line_visualizer_${{ github.ref_name }}.exe
+            parametric_line_visualizer_${{ github.ref_name }}.zip
 
   release:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v3
+      - name: 📥 Download EXE Artifact
+        uses: actions/download-artifact@v4
         with:
           name: parametric_line_visualizer
 
-      - name: Upload to GitHub Releases
+      - name: 🚀 Publish GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: parametric_line_visualizer.exe
+          files: |
+            parametric_line_visualizer_${{ github.ref_name }}.exe
+            parametric_line_visualizer_${{ github.ref_name }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
