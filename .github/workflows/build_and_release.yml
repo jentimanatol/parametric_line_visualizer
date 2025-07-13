@@ -1,4 +1,4 @@
-name: Build and Release EXE
+name: Build and Release EXE and Linux
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - 'v*.*'
 
 jobs:
-  build:
+  build-windows:
     runs-on: windows-latest
 
     steps:
@@ -37,7 +37,7 @@ jobs:
             exit 1
           }
 
-      - name: 🛠️ Build EXE with PyInstaller (with icon and matplotlib support)
+      - name: 🛠️ Build Windows EXE
         run: |
           $mplData = python -c "import matplotlib; print(matplotlib.get_data_path())"
           pyinstaller parametric_line_visualizer.py `
@@ -50,40 +50,72 @@ jobs:
             --hidden-import=matplotlib.backends.backend_tkagg `
             --upx-dir upx-4.2.1-win64
 
-      - name: 🧪 Check EXE output
-        run: |
-          if (Test-Path "dist\parametric_line_visualizer.exe") {
-            echo "✅ EXE created."
-          } else {
-            echo "❌ Build failed."
-            exit 1
-          }
-
-      - name: 📦 Copy and Zip EXE
+      - name: 📦 Package Windows Artifacts
         run: |
           Copy-Item "dist\parametric_line_visualizer.exe" -Destination "parametric_line_visualizer_${{ github.ref_name }}.exe"
-          Compress-Archive -Path "parametric_line_visualizer_${{ github.ref_name }}.exe" -DestinationPath "parametric_line_visualizer_${{ github.ref_name }}.zip"
+          Compress-Archive -Path "parametric_line_visualizer_${{ github.ref_name }}.exe" -DestinationPath "parametric_line_visualizer_${{ github.ref_name }}_win.zip"
 
-      - name: 📤 Upload Artifact
+      - name: 📤 Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: release_files
           path: |
             parametric_line_visualizer_${{ github.ref_name }}.exe
-            parametric_line_visualizer_${{ github.ref_name }}.zip
+            parametric_line_visualizer_${{ github.ref_name }}_win.zip
 
-  release:
-    needs: build
+  build-linux:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Download Artifact
+      - name: 📦 Checkout source
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 📚 Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk
+          python -m pip install --upgrade pip
+          pip install pyinstaller matplotlib numpy
+
+      - name: 🛠️ Build Linux Binary
+        run: |
+          pyinstaller parametric_line_visualizer.py \
+            --onefile \
+            --noconfirm \
+            --name parametric_line_visualizer \
+            --hidden-import=matplotlib.backends.backend_tkagg \
+            --add-data="$(python3 -c 'import matplotlib; print(matplotlib.get_data_path())'):matplotlib/mpl-data"
+
+      - name: 📦 Package Linux Artifacts
+        run: |
+          mv dist/parametric_line_visualizer parametric_line_visualizer_${{ github.ref_name }}_linux
+          zip parametric_line_visualizer_${{ github.ref_name }}_linux.zip parametric_line_visualizer_${{ github.ref_name }}_linux
+
+      - name: 📤 Upload Linux Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release_files
+          path: |
+            parametric_line_visualizer_${{ github.ref_name }}_linux
+            parametric_line_visualizer_${{ github.ref_name }}_linux.zip
+
+  release:
+    needs: [build-windows, build-linux]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Download All Artifacts
         uses: actions/download-artifact@v4
         with:
           name: release_files
           path: .
 
-      - name: 🧾 List downloaded files
+      - name: 🧾 List files
         run: ls -la
 
       - name: 🚀 Publish GitHub Release
@@ -91,6 +123,8 @@ jobs:
         with:
           files: |
             parametric_line_visualizer_${{ github.ref_name }}.exe
-            parametric_line_visualizer_${{ github.ref_name }}.zip
+            parametric_line_visualizer_${{ github.ref_name }}_win.zip
+            parametric_line_visualizer_${{ github.ref_name }}_linux
+            parametric_line_visualizer_${{ github.ref_name }}_linux.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

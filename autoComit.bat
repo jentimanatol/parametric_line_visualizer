@@ -1,9 +1,9 @@
 git --version
 git add .
-git commit -m " Ensure plot window works in the frozen .exe"
+git commit -m " Ensure plot window works in the frozen .exe and support Linux"
 git push origin main
 
 :: === Tagging for GitHub Actions Release Build ===
-git tag v2.8
-git push origin v2.8
+git tag v3.0
+git push origin v3.0
 pause
