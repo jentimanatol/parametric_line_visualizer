@@ -2,6 +2,14 @@
 
 This Python GUI app helps visualize a **parametric line in 3D space** — perfect for Calculus III students learning vector equations.
 
+## 🚀 Download
+
+Get the latest release from the [GitHub Releases page](https://github.com/yourusername/parametric_line_visualizer/releases).
+
+| Release | Platform      | License      |
+|---------|--------------|--------------|
+| Latest  | Windows, Mac | MIT License  |
+
 ## 🎓 Purpose
 
 This tool demonstrates how a line in space can be described using a point and a direction vector:
@@ -70,9 +78,9 @@ Generates:
 Created with ❤️ for students exploring vectors and parametric equations in Calculus 3.
 
 **Crafted by Anatolie Jentimir — blending code, creativity, and calculus for curious minds.**
----
+------------------------------------------------------------------------------------------
 
 ## ⚖️ License
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).  
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
 You are free to use, modify, and distribute this software without restriction.
