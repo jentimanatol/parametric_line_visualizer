@@ -1,9 +1,9 @@
 git --version
 git add .
-git commit -m " updted interface used CSS stiles "
+git commit -m " Ensure plot window works in the frozen .exe"
 git push origin main
 
 :: === Tagging for GitHub Actions Release Build ===
-git tag v2.7
-git push origin v2.7
+git tag v2.8
+git push origin v2.8
 pause
