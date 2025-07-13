@@ -1,10 +1,6 @@
-# Set matplotlib backend for compatibility with tkinter and PyInstaller
-import matplotlib
-matplotlib.use('TkAgg')  # Ensure plot window works in the frozen .exe
-
-import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D  # Needed for 3D plots even if not used directly
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import tkinter as tk
 from tkinter import messagebox
 
@@ -49,9 +45,6 @@ def visualize_line():
         messagebox.showerror("Invalid Input", "❌ Please enter valid numbers.")
         return
 
-    # Debug confirmation (useful in .exe builds)
-    messagebox.showinfo("Visualize", "Opening 3D plot window...")
-
     t = np.linspace(-10, 10, 100)
     x = x0 + a * t
     y = y0 + b * t
@@ -75,7 +68,7 @@ def visualize_line():
     plt.tight_layout()
     plt.show()
 
-# GUI setup
+# GUI
 root = tk.Tk()
 root.title("🎓 Parametric Line Visualizer")
 
@@ -107,7 +100,7 @@ entry_t = tk.Entry(root, width=7); entry_t.grid(row=3, column=1); entry_t.insert
 tk.Button(root, text="📄 Print Data", command=print_data, bg="lightyellow").grid(row=3, column=2)
 tk.Button(root, text="🎨 Visualize Line", command=visualize_line, bg="lightgreen").grid(row=3, column=3)
 
-# Output Text
+# Output
 tk.Label(root, text="🖨️ Parametric Equation Info:").grid(row=4, column=0, columnspan=4, sticky="w", padx=5)
 output_text = tk.Text(root, height=8, width=65, wrap="word", borderwidth=2, relief="sunken")
 output_text.grid(row=5, column=0, columnspan=4, padx=10, pady=5)
@@ -115,5 +108,6 @@ output_text.grid(row=5, column=0, columnspan=4, padx=10, pady=5)
 # Footer
 tk.Label(root, text="🧮 Calculus 3 Visualizer | Powered by Python & Matplotlib", fg="gray").grid(row=6, column=0, columnspan=4, pady=10)
 
-# Start the GUI loop
 root.mainloop()
+
+
