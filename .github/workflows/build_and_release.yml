@@ -58,7 +58,7 @@ jobs:
       - name: 📤 Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: release_files
+          name: windows_artifacts
           path: |
             parametric_line_visualizer_${{ github.ref_name }}.exe
             parametric_line_visualizer_${{ github.ref_name }}_win.zip
@@ -99,7 +99,7 @@ jobs:
       - name: 📤 Upload Linux Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: release_files
+          name: linux_artifacts
           path: |
             parametric_line_visualizer_${{ github.ref_name }}_linux
             parametric_line_visualizer_${{ github.ref_name }}_linux.zip
@@ -109,13 +109,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Download All Artifacts
+      - name: 📥 Download Windows Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: release_files
+          name: windows_artifacts
           path: .
 
-      - name: 🧾 List files
+      - name: 📥 Download Linux Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: linux_artifacts
+          path: .
+
+      - name: 🧾 List files for debug
         run: ls -la
 
       - name: 🚀 Publish GitHub Release
